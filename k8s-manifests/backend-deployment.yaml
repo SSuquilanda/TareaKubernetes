@@ -8,7 +8,7 @@ metadata:
     io.kompose.service: backend
   name: backend
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       io.kompose.service: backend
@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: springboot-app
-          image: ssuquilanda/backend-k8s:latest
+          image: ssuquilanda/backend-k8s:v3
           ports:
             - containerPort: 8080
               protocol: TCP
@@ -35,6 +35,25 @@ spec:
               value: password
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: update
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 40    # Espera 40s para arrancar
+            periodSeconds: 15          # Revisa cada 15s
+            timeoutSeconds: 5          # Da 5s para responder
+            failureThreshold: 5        # Permite hasta 5 fallos antes de reiniciar
+
+          readinessProbe:
+              httpGet:
+                path: /api/health
+                port: 8080
+              initialDelaySeconds: 30    # Espera 30s desde que arranca el contenedor
+              periodSeconds: 5
+              timeoutSeconds: 3
+              failureThreshold: 3
+
+
       initContainers:
         - name: wait-for-db
           image: busybox

@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: angular-client
-          image: ssuquilanda/frontend-k8s:latest
+          image: ssuquilanda/frontend-k8s:v4
           ports:
             - containerPort: 80
               protocol: TCP
